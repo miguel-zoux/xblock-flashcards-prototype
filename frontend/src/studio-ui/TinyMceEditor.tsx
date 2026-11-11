@@ -47,29 +47,17 @@ import 'tinymce/plugins/visualchars';
 
 interface TinyMceEditorProps {
   value: string;
-  styling: FlashcardStyling;
   onChange: (value: string) => void;
+  /** Lets a <label htmlFor> point at the editor. */
+  id?: string;
 }
 
-function TinyMceEditor({ value, styling, onChange }: TinyMceEditorProps) {
-  const fontSize = styling.fontSize || '16px';
-  const textColor = styling.textColor || '#212529';
-  const backgroundColor = styling.backgroundColor || '#ffffff';
-  const borderColor = styling.borderColor || '#dee2e6';
-  const contentStyle = `
-    body {
-      font-size: ${fontSize};
-      color: ${textColor};
-      background-color: ${backgroundColor};
-    }
-    h1, h2, h3, h4, h5, h6 {
-      color: inherit;
-    }
-  `;
+// Card styling comes from the design system now, so the editor shows plain text.
+function TinyMceEditor({ value, onChange, id }: TinyMceEditorProps) {
   return (
-    <div className="tinymce-wrapper" style={{ borderColor }}>
+    <div className="tinymce-wrapper">
       <Editor
-        key={`${fontSize}|${textColor}|${backgroundColor}`}
+        id={id}
         licenseKey="gpl"
         value={value}
         onEditorChange={(newValue) => onChange(newValue)}
@@ -87,7 +75,6 @@ function TinyMceEditor({ value, styling, onChange }: TinyMceEditorProps) {
             'link unlink | image media | table | removeformat | code | fullscreen | help',
           ],
           skin_url: 'default',
-          content_style: contentStyle,
         }}
       />
     </div>

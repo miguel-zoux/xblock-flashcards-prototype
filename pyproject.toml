@@ -1,12 +1,12 @@
 [project]
-name = "FlashcardsXBlock"
+name = "FlashcardsPrototypeXBlock"
 version = "1.1.1"
-description = "A Flashcards XBlock for Open edX."
+description = "Prototype copy of OpenCraft's Flashcards XBlock for Open edX."
 readme = {file = "README.md", content-type = "text/markdown"}
 requires-python = ">=3.11"
 license = { text = "MIT" }
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
+    "Development Status :: 3 - Alpha",
     "Framework :: Django",
     "Framework :: Django :: 4.2",
     "Intended Audience :: Developers",
@@ -21,17 +21,17 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/open-craft/FlashcardsXBlock"
+Upstream = "https://github.com/open-craft/FlashcardsXBlock"
 
 [project.entry-points."xblock.v1"]
-flashcards = "flashcards:FlashcardsXBlock"
+flashcards_prototype = "flashcards_prototype:FlashcardsPrototypeXBlock"
 
 [tool.setuptools.packages.find]
-include = ["flashcards", "flashcards.*"]
+include = ["flashcards_prototype", "flashcards_prototype.*"]
 exclude = ["*tests"]
 
 [tool.setuptools.package-data]
-flashcards = ["static/**/*", "public/**/*"]
+flashcards_prototype = ["static/**/*", "public/**/*"]
 
 [dependency-groups]
 test = [
@@ -172,7 +172,7 @@ allow-magic-value-types = ['int', 'str']
 
 [tool.pytest.ini_options]
 env = "DJANGO_SETTINGS_MODULE=workbench.settings"
-addopts = "--cov flashcards --cov-report term-missing --cov-report xml"
+addopts = "--cov flashcards_prototype --cov-report term-missing --cov-report xml"
 norecursedirs = ".* docs requirements site-packages"
 filterwarnings = [
     "ignore:Runtime.user_id is deprecated:DeprecationWarning",

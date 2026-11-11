@@ -28,7 +28,6 @@ describe('StudioUi component test', () => {
   const studioUiProps = {
     initialTitle: 'Test Deck',
     initialFlashcards: [],
-    initialStyling: {},
     studioSaveUrl,
     runtime: { notify: mockNotify, handlerUrl: vi.fn() },
   };
@@ -37,12 +36,12 @@ describe('StudioUi component test', () => {
     vi.clearAllMocks();
   });
 
-  it('switches between StylingPage and EditingPage', async () => {
+  it('opens straight on the cards, with no styling options', () => {
     render(<StudioUi {...studioUiProps} />);
-    await userEvent.click(screen.getByRole('link', { name: /Continue/i }));
-    expect(screen.getByRole('link', { name: /Back/i }))
-      .toBeInTheDocument();
-    await userEvent.click(screen.getByRole('link', { name: /Back/i }));
+    expect(screen.getByLabelText('Flashcards Deck Title')).toBeInTheDocument();
+    expect(screen.getByLabelText('Introduction')).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Continue/i })).not.toBeInTheDocument();
+    expect(screen.queryByText(/colou?r|font size/i)).not.toBeInTheDocument();
   });
 
   it('runs onSave when clicking Save', async () => {
@@ -58,9 +57,26 @@ describe('StudioUi component test', () => {
       .toHaveBeenCalledWith('save', { state: 'end' });
     expect(jqueryMock.post).toHaveBeenCalledWith(studioSaveUrl, JSON.stringify({
       title: 'Test Deck',
+      intro: '',
       flashcards: [],
-      styling: {},
     }));
+  });
+
+  it('reports an error to Studio when the save fails', async () => {
+    jqueryMock.post.mockReturnValue({
+      done: vi.fn(() => ({
+        fail: vi.fn((failCallback) => failCallback({ responseJSON: { error: 'Flashcard 1 must have a text front and back.' } })),
+      })),
+    });
+
+    render(<StudioUi {...studioUiProps} />);
+    await userEvent.click(screen.getByRole('link', { name: /Save/i }));
+    expect(mockNotify).toHaveBeenCalledWith('save', { state: 'start' });
+    expect(mockNotify).not.toHaveBeenCalledWith('save', { state: 'end' });
+    expect(mockNotify).toHaveBeenCalledWith('error', {
+      title: 'Unable to save',
+      message: 'Flashcard 1 must have a text front and back.',
+    });
   });
 
   it('runs onCancel when clicking Cancel', async () => {

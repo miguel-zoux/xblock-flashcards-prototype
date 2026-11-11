@@ -4,12 +4,33 @@
     "outDir": "dist",
     "baseUrl": "./src",
     "paths": {
-      "*": ["*"]
+      "*": [
+        "*"
+      ],
+      "react": [
+        "../node_modules/@types/react"
+      ],
+      "react/*": [
+        "../node_modules/@types/react/*"
+      ],
+      "react-dom/*": [
+        "../node_modules/@types/react-dom/*"
+      ],
+      "csstype": [
+        "../node_modules/csstype"
+      ]
     },
     "types": [
       "@testing-library/jest-dom"
     ]
   },
-  "include": ["*.js", ".eslintrc.js", "src/**/*"],
-  "exclude": ["dist", "node_modules"]
+  "include": [
+    "*.js",
+    ".eslintrc.js",
+    "src/**/*"
+  ],
+  "exclude": [
+    "dist",
+    "node_modules"
+  ]
 }

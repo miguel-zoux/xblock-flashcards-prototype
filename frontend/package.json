@@ -18,6 +18,7 @@
   "dependencies": {
     "@openedx/paragon": "^22.20.0",
     "@tinymce/tinymce-react": "^5.1.1",
+    "@zoux/exemplar-design-system": "file:../../exemplar-design-system",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "tinymce": "^7.2.1"

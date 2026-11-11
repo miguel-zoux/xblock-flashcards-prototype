@@ -7,13 +7,6 @@ type Flashcard = {
   back: string;
 };
 
-type FlashcardStyling = {
-  fontSize?: string,
-  backgroundColor?: string,
-  textColor?: string,
-  borderColor?: string,
-};
-
 type XBlockElementLike = Element | { readonly 0: Element; readonly jquery: string };
 
 interface XBlockRuntime {
@@ -23,6 +16,9 @@ interface XBlockRuntime {
 
 interface XBlockData {
   title: string,
+  intro?: string,
   flashcards: Flashcard[],
-  styling: FlashcardStyling,
+  launchImageUrl?: string,
+  cssUrl?: string,
+  usageId?: string,
 }

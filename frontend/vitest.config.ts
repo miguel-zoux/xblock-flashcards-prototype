@@ -3,6 +3,9 @@
 import { defineConfig } from 'vite'
 
 export default defineConfig({
+    resolve: {
+        dedupe: ['react', 'react-dom'],
+    },
     test: {
         environment: 'jsdom',
         setupFiles: ['./vitest.setup.ts'],

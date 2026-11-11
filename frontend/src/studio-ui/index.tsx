@@ -7,7 +7,9 @@ import './style.scss';
 export const renderEditor = (
   runtime: XBlockRuntime,
   element: XBlockElementLike | null,
-  { title, flashcards, styling }: XBlockData,
+  {
+    title, intro, flashcards,
+  }: XBlockData,
 ) => {
   const container = element && 'jquery' in element ? element[0] : element;
 
@@ -22,8 +24,8 @@ export const renderEditor = (
     <React.StrictMode>
       <StudioUi
         initialTitle={title}
+        initialIntro={intro ?? ''}
         initialFlashcards={flashcards}
-        initialStyling={styling}
         studioSaveUrl={studioSaveUrl}
         runtime={runtime}
       />

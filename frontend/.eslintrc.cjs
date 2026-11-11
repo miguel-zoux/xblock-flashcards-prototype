@@ -17,6 +17,8 @@ module.exports = {
     },
     rules: {
         'class-methods-use-this': 'off',
+        // Optional props are typed in TypeScript and defaulted in the destructuring.
+        'react/require-default-props': 'off',
         curly: ['error', 'all'],
         'max-len': [
             'error',

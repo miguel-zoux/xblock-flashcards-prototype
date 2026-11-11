@@ -26,7 +26,6 @@ describe('EditingPage', () => {
         setTitle={setTitle}
         flashcards={flashcards}
         setFlashcards={setFlashcards}
-        styling={{}}
       />,
     );
     await user.click(screen.getByText(/Add Flashcard/i));
@@ -48,7 +47,6 @@ describe('EditingPage', () => {
         setTitle={setTitle}
         flashcards={flashcards}
         setFlashcards={setFlashcards}
-        styling={{}}
       />,
     );
 

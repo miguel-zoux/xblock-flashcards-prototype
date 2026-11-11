@@ -1,15 +1,10 @@
 import * as React from 'react';
-import StylingPage from './styling-page';
 import EditingPage from './editing-page';
-
-enum ConfigPage {
-  Styling, Editing,
-}
 
 interface StudioUiProps {
   initialTitle: string
+  initialIntro?: string
   initialFlashcards: Flashcard[]
-  initialStyling: FlashcardStyling
   studioSaveUrl: string
   runtime: XBlockRuntime
 }
@@ -35,11 +30,10 @@ function ActionButtonLink({ className, onClick, label }:ActionButtonLinkProps) {
 }
 
 export default function StudioUi({
-  initialTitle, initialFlashcards, initialStyling, studioSaveUrl, runtime,
+  initialTitle, initialIntro = '', initialFlashcards, studioSaveUrl, runtime,
 }: StudioUiProps) {
-  const [step, setStep] = React.useState(ConfigPage.Styling);
-  const [styling, setStyling] = React.useState(initialStyling);
   const [title, setTitle] = React.useState(initialTitle);
+  const [intro, setIntro] = React.useState(initialIntro);
   const [flashcards, setFlashcards] = React.useState(initialFlashcards);
 
   const handleSave = () => {
@@ -49,10 +43,16 @@ export default function StudioUi({
 
     $.post(studioSaveUrl, JSON.stringify({
       title,
+      intro,
       flashcards: flashcardsArray,
-      styling,
     })).done(() => {
       runtime.notify('save', { state: 'end' });
+    }).fail((xhr: { responseJSON?: { error?: string } }) => {
+      // The handler answers malformed saves with a 400 and {"error": "..."}.
+      runtime.notify('error', {
+        title: 'Unable to save',
+        message: xhr?.responseJSON?.error || 'Something went wrong while saving. Please try again.',
+      });
     });
   };
 
@@ -60,33 +60,18 @@ export default function StudioUi({
     <div className="xblock-flashcards xblock--flashcards--editor editor-with-buttons">
       <div className="d-flex flex-column editor-layout">
         <div className="d-flex flex-column overflow-auto m-2.5">
-          {step === ConfigPage.Styling && (<StylingPage styling={styling} setStyling={setStyling} />)}
-          {step === ConfigPage.Editing && (
-            <EditingPage
-              title={title}
-              setTitle={setTitle}
-              flashcards={flashcards}
-              setFlashcards={setFlashcards}
-              styling={styling}
-            />
-          )}
+          <EditingPage
+            title={title}
+            setTitle={setTitle}
+            intro={intro}
+            setIntro={setIntro}
+            flashcards={flashcards}
+            setFlashcards={setFlashcards}
+          />
         </div>
 
         <div className="xblock-actions">
           <ul className="action-buttons">
-            {step === ConfigPage.Styling ? (
-              <ActionButtonLink
-                onClick={() => setStep(ConfigPage.Editing)}
-                className="continue-button"
-                label="Continue"
-              />
-            ) : (
-              <ActionButtonLink
-                onClick={() => setStep(ConfigPage.Styling)}
-                className="continue-button"
-                label="Back"
-              />
-            )}
             <ActionButtonLink
               onClick={handleSave}
               className="save-button"

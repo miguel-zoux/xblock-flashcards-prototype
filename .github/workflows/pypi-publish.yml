@@ -1,8 +1,11 @@
 name: Publish package to PyPI
 
+# Disabled for the prototype: publishing a release must not push this package to PyPI.
+# To restore, replace the trigger with:
+#   release:
+#     types: [published]
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
 
 jobs:
 

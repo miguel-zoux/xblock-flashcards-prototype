@@ -14,10 +14,4 @@ renderEditor(mockRuntime, document.querySelector('#root'), {
       back: '<b>Answer 1</b>',
     },
   ],
-  styling: {
-    fontSize: '16px',
-    backgroundColor: '#f8f9fa',
-    textColor: '#212529',
-    borderColor: '#dee2e6',
-  },
 });

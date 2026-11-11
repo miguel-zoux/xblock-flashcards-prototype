@@ -1,219 +1,603 @@
-@import "../index";
+// Flashcards-specific layout and motion only. Colours, type, spacing, radii and
+// the shared components come from @zoux/exemplar-design-system (var(--wgu-*)).
 
-.flashcards_block {
-    width: 100%;
-    display: inline-block;
-    text-align: center;
+.wgu-ds.fc-block {
+  width: 100%;
 
-    .visually-hidden {
-        position: absolute !important;
-        width: 1px !important;
-        height: 1px !important;
-        padding: 0 !important;
-        margin: -1px !important;
-        overflow: hidden !important;
-        clip: rect(0, 0, 0, 0) !important;
-        white-space: nowrap !important;
-        border: 0 !important;
-    }
-
-    .fc-number {
-        text-align: center;
-        margin-bottom: 10px;
-        font-weight: bold;
-        font-size: 14px;
-        color: #666;
-    }
-
-    .fc-title {
-        display: block;
-        width: 100%;
-        text-align: center;
-        margin: 10px 0;
-        font-weight: 600;
-        font-size: 2em;
-    }
-
-    hr {
-        width: 50%;
-        margin-bottom: 30px;
-        margin-left: 25%;
-    }
-
-    .fc-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        margin: 20px 0;
-        gap: 20px;
-    }
-
-    .fc-card {
-        position: relative;
-        width: 400px;
-        height: 250px;
-        perspective: 1000px;
-        cursor: pointer;
-        border-radius: 20px;
-        margin: 0 auto;
-
-        &.is-navigating {
-            .fc-card-front,
-            .fc-card-back {
-                transition: none !important;
-            }
-        }
-
-        &.is-flipped {
-            .fc-card-front {
-                transform: rotateY(-180deg);
-            }
-            .fc-card-back {
-                transform: rotateY(0deg);
-            }
-        }
-    }
-
-    .fc-card-front,
-    .fc-card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 20px;
-        border-radius: 20px;
-        border: 2px solid #000;
-        background-color: #f8f9fa;
-        backface-visibility: hidden;
-        transition: transform 0.6s;
-        box-sizing: border-box;
-
-        .fc-flip-icon {
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            opacity: 0.6;
-            transition: opacity 0.2s ease;
-            color: #666;
-
-            &:hover {
-                opacity: 1;
-            }
-        }
-
-        p.label {
-            margin-top: 0;
-            margin-bottom: 10px;
-            font-size: 0.8em;
-            font-style: italic;
-            font-weight: 200;
-        }
-
-        .card-content {
-            font-weight: 600;
-            line-height: 1.4;
-
-            h1, h2, h3, h4, h5, h6 {
-                color: inherit;
-            }
-        }
-    }
-
-    .fc-card-front {
-        transform: rotateY(0deg);
-    }
-
-    .fc-card-back {
-        transform: rotateY(180deg);
-    }
-
-    .nav-btn {
-        width: 48px;
-        height: 48px;
-        border-radius: 50%;
-        border: 2px solid #ddd;
-        background-color: #fff;
-        color: #666;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        transition: all 0.2s ease;
-
-        &:hover:not(:disabled) {
-            background-color: #f0f0f0;
-            border-color: #ccc;
-            color: #333;
-        }
-
-        &:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-    }
-
-    .fc-start-controls {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        align-items: center;
-        margin: 20px 0;
-
-        .shuffle-btn {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-weight: 500;
-            transition: all 0.2s ease;
-
-            &:hover {
-                transform: translateY(-1px);
-            }
-        }
-
-        .start-btn {
-            padding: 12px 30px;
-            font-weight: 600;
-            border-radius: 5px;
-            transition: all 0.2s ease;
-
-            &:hover {
-                transform: translateY(-1px);
-            }
-        }
-    }
-
+  // Crop the prototype illustration the way the Figma frame does (2206:2880).
+  .wgu-launch__media {
+    background-position: 77% 73%;
+    background-size: 177% 152%;
+  }
 }
 
-/* Responsive design */
-@media (max-width: 768px) {
-    .fc-container {
-        gap: 10px;
-    }
+// The full-screen interactive. Hidden in the course page until launched.
+.wgu-ds.fc-modal {
+  display: none;
 
-    .fc-card {
-        width: 90%;
-        max-width: 350px;
-        height: 200px;
-    }
+  &.is-open {
+    display: block;
+  }
+}
 
-    .fc-title {
-        font-size: 1.5em;
-    }
+.wgu-ds .fc-stage {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--wgu-space-16);
+  align-items: center;
+  justify-content: center;
+  padding-top: var(--wgu-space-16);
+}
 
-    .fc-card #fc-question,
-    .fc-card #fc-answer {
-        font-size: 1em;
-    }
+// The card stack. Sizes follow Figma (top card 467×592, two cards behind it),
+// scaled with the stack's width so it fits smaller screens.
+.wgu-ds .fc-stack {
+  position: relative;
+  container-type: inline-size;
+  width: min(467px, 100%, calc((100vh - 280px) * 0.74));
+  aspect-ratio: 467 / 631;
+}
 
-    .nav-btn {
-        width: 40px;
-        height: 40px;
+.wgu-ds .fc-stack__back {
+  position: absolute;
+  left: 50%;
+  border-radius: var(--wgu-radius-xxl);
+  transform: translateX(-50%);
+}
+
+.wgu-ds .fc-stack__back--far {
+  top: 0;
+  width: 79%;
+  aspect-ratio: 369 / 465;
+  background-color: var(--wgu-local-card-stack-2);
+  box-shadow: var(--wgu-local-shadow-card-soft);
+}
+
+.wgu-ds .fc-stack__back--near {
+  top: 4.2cqw;
+  width: 92.7%;
+  aspect-ratio: 433 / 547;
+  background-color: var(--wgu-local-card-stack-1);
+  box-shadow: var(--wgu-local-shadow-card);
+}
+
+.wgu-ds .fc-card {
+  position: absolute;
+  top: 8.35cqw;
+  left: 0;
+  width: 100%;
+  aspect-ratio: 467 / 592;
+  perspective: 1600px;
+}
+
+.wgu-ds .fc-card__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform var(--wgu-local-motion-medium) var(--wgu-local-ease);
+}
+
+.wgu-ds .fc-card.is-flipped .fc-card__inner {
+  transform: rotateY(180deg);
+}
+
+.wgu-ds .fc-card__face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: var(--wgu-interact-raised);
+  border-radius: var(--wgu-radius-xxl);
+  box-shadow: var(--wgu-local-shadow-card);
+  backface-visibility: hidden;
+}
+
+.wgu-ds .fc-card__flip-icon {
+  position: absolute;
+  top: 6cqw;
+  right: 6cqw;
+  width: 28px;
+  height: 28px;
+  color: var(--wgu-icon-interact-disabled);
+}
+
+// Front: the term, centred. The whole face is the button that flips the card.
+.wgu-ds .fc-card__front {
+  align-items: center;
+  justify-content: center;
+  padding: var(--wgu-space-32);
+  color: var(--wgu-txt-headings);
+  text-align: center;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: 3px solid var(--wgu-txt-headings);
+    outline-offset: 4px;
+  }
+}
+
+.wgu-ds .fc-card__term {
+  --wgu-clamp-lines: 4;
+}
+
+.wgu-ds .fc-card__hint {
+  position: absolute;
+  bottom: 7cqw;
+  left: 0;
+  display: flex;
+  gap: var(--wgu-space-8);
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  color: var(--wgu-txt-content);
+
+  svg {
+    width: 28px;
+    height: 28px;
+    color: var(--wgu-color-text-main-navy);
+  }
+}
+
+// Back: the term and its definition, then "How did you do?" and the answers.
+.wgu-ds .fc-card__back {
+  justify-content: space-between;
+  transform: rotateY(180deg);
+}
+
+.wgu-ds .fc-card__answer {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--wgu-space-8);
+  justify-content: center;
+  min-height: 0;
+  padding: 0 var(--wgu-space-32);
+  outline: none;
+}
+
+.wgu-ds .fc-card__answer-term {
+  color: var(--wgu-txt-headings);
+}
+
+.wgu-ds .fc-card__definition {
+  --wgu-clamp-lines: 6;
+  color: var(--wgu-txt-content);
+}
+
+.wgu-ds .fc-card__question {
+  padding-bottom: var(--wgu-space-16);
+  color: var(--wgu-txt-content);
+  text-align: center;
+}
+
+// The two answers share the footer, each a fixed half, so moving straight
+// from one to the other works. Hovering or focusing one sweeps its feedback
+// colour across the footer from its side, and slides its own label (the same
+// element, no copies) from the centre of its half out to the edge, turning
+// white. The other label fades.
+.wgu-ds .fc-card__footer {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  background-color: var(--wgu-interact-raised);
+  border-top: 1px solid var(--wgu-border-sec-default);
+
+  // The two colour sweeps.
+  &::before,
+  &::after {
+    position: absolute;
+    inset: 0;
+    content: '';
+    transform: scaleX(0);
+    transition: transform var(--wgu-local-motion-medium) var(--wgu-local-ease);
+  }
+
+  &::before {
+    background-color: var(--wgu-icon-interact-negative);
+    transform-origin: left center;
+  }
+
+  &::after {
+    background-color: var(--wgu-icon-interact-positive);
+    transform-origin: right center;
+  }
+}
+
+.wgu-ds .fc-card__divider {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 1px;
+  background-color: var(--wgu-border-sec-default);
+  transition: opacity var(--wgu-local-motion-fast);
+}
+
+.wgu-ds .fc-answer {
+  --fc-edge: var(--wgu-space-64);
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 1 50%;
+  align-items: center;
+  min-width: 0;
+  height: 92px;
+  padding: 0;
+  overflow: hidden;
+  white-space: nowrap;
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  &:focus-visible {
+    outline: 3px solid var(--wgu-txt-headings);
+    outline-offset: -6px;
+  }
+}
+
+// At rest each label is centred in its half (50% minus half its own width);
+// active, it sits --fc-edge from the outer edge. Both are animatable.
+.wgu-ds .fc-answer__label {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  gap: var(--wgu-space-8);
+  align-items: center;
+  transition: left var(--wgu-local-motion-medium) var(--wgu-local-ease),
+    right var(--wgu-local-motion-medium) var(--wgu-local-ease),
+    transform var(--wgu-local-motion-medium) var(--wgu-local-ease),
+    color var(--wgu-local-motion-fast), opacity var(--wgu-local-motion-fast);
+}
+
+.wgu-ds .fc-answer--missed .fc-answer__label {
+  left: 50%;
+  color: var(--wgu-txt-feedback-negative);
+  transform: translate(-50%, -50%);
+}
+
+.wgu-ds .fc-answer--got .fc-answer__label {
+  right: 50%;
+  color: var(--wgu-txt-feedback-positive);
+  transform: translate(50%, -50%);
+}
+
+@mixin fc-active($side, $other, $sweep) {
+  .fc-card__footer::#{$sweep} {
+    transform: scaleX(1);
+  }
+
+  .fc-answer--#{$side} .fc-answer__label {
+    #{if($side == missed, left, right)}: var(--fc-edge);
+    color: var(--wgu-txt-inverse);
+    transform: translate(0, -50%);
+  }
+
+  .fc-answer--#{$other} .fc-answer__label,
+  .fc-card__divider {
+    opacity: 0;
+  }
+}
+
+.wgu-ds .fc-card__back:has(.fc-answer--missed:hover, .fc-answer--missed:focus-visible),
+.wgu-ds .fc-card.is-falling--missed {
+  @include fc-active(missed, got, before);
+}
+
+.wgu-ds .fc-card__back:has(.fc-answer--got:hover, .fc-answer--got:focus-visible),
+.wgu-ds .fc-card.is-falling--got {
+  @include fc-active(got, missed, after);
+}
+
+// The answered card falls away to its side and fades, uncovering the next one.
+.wgu-ds .fc-card.is-falling {
+  z-index: 1;
+  pointer-events: none;
+  animation: var(--wgu-local-motion-slow) ease-in forwards;
+}
+
+.wgu-ds .fc-card.is-falling--missed {
+  animation-name: fc-fall-left;
+}
+
+.wgu-ds .fc-card.is-falling--got {
+  animation-name: fc-fall-right;
+}
+
+@keyframes fc-fall-left {
+  40% {
+    opacity: 0.7;
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(-95%, 30%) rotate(-23deg);
+  }
+}
+
+@keyframes fc-fall-right {
+  40% {
+    opacity: 0.7;
+  }
+
+  to {
+    opacity: 0;
+    transform: translate(95%, 30%) rotate(23deg);
+  }
+}
+
+.wgu-ds .fc-counter {
+  color: var(--wgu-txt-headings);
+  text-align: center;
+}
+
+// Outcome: the score on the left, the missed cards on the right, Exit below.
+.wgu-ds .fc-outcome {
+  display: grid;
+  flex: 1 1 auto;
+  grid-template-areas:
+    'summary missed'
+    'exit exit';
+  grid-template-rows: 1fr auto;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--wgu-space-32) var(--wgu-space-64);
+  width: 100%;
+  max-width: 1216px;
+  min-height: 0;
+  margin: 0 auto;
+  padding: var(--wgu-space-48) var(--wgu-space-48) 0;
+}
+
+.wgu-ds .fc-outcome--all-correct {
+  grid-template-areas:
+    'summary'
+    'exit';
+  grid-template-columns: 1fr;
+}
+
+.wgu-ds .fc-outcome__summary {
+  display: flex;
+  flex-direction: column;
+  grid-area: summary;
+  gap: var(--wgu-space-24);
+  align-items: flex-start;
+  align-self: center;
+  max-width: 384px;
+}
+
+.wgu-ds .fc-outcome--all-correct .fc-outcome__summary {
+  justify-self: center;
+}
+
+.wgu-ds .fc-outcome__icon {
+  width: 73px;
+  height: 73px;
+  color: var(--wgu-icon-sec-default);
+}
+
+.wgu-ds .fc-outcome__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wgu-space-8);
+}
+
+.wgu-ds .fc-outcome__score,
+.wgu-ds .fc-outcome__headline {
+  color: var(--wgu-txt-headings);
+  outline: none;
+}
+
+.wgu-ds .fc-outcome__advice {
+  color: var(--wgu-txt-content);
+}
+
+.wgu-ds .fc-button-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.wgu-ds .fc-outcome__missed {
+  display: flex;
+  flex-direction: column;
+  grid-area: missed;
+  gap: var(--wgu-space-32);
+  align-self: center;
+  min-height: 0;
+  max-height: 100%;
+  color: var(--wgu-txt-content);
+}
+
+// "If the list is too long for the container, then a scroll bar should appear."
+.wgu-ds .fc-outcome__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wgu-space-16);
+  max-height: min(480px, 55vh);
+  padding: 4px 4px var(--wgu-space-16);
+  overflow-y: auto;
+  list-style: none;
+}
+
+.wgu-ds .fc-outcome__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--wgu-space-8);
+  padding: var(--wgu-space-24);
+  background-color: var(--wgu-bg-sec-main);
+  border-radius: var(--wgu-radius-xl);
+}
+
+.wgu-ds .fc-outcome__term {
+  color: var(--wgu-txt-interact-headings);
+}
+
+.wgu-ds .fc-outcome__exit {
+  grid-area: exit;
+  justify-self: end;
+}
+
+@media (max-width: 767px) {
+  .wgu-ds .fc-stack {
+    width: min(342px, 100%, calc((100vh - 220px) * 0.74));
+  }
+
+  .wgu-ds .fc-card__front,
+  .wgu-ds .fc-card__answer {
+    padding: var(--wgu-space-24);
+  }
+
+  .wgu-ds .fc-card__term {
+    font-size: var(--wgu-type-h4-size);
+    line-height: var(--wgu-type-h4-line);
+  }
+
+  .wgu-ds .fc-card__definition {
+    font-size: var(--wgu-type-body-18-regular-size);
+    line-height: var(--wgu-type-body-18-regular-line);
+  }
+
+  .wgu-ds .fc-answer {
+    --fc-edge: var(--wgu-space-24);
+    height: 76px;
+  }
+
+  .wgu-ds .fc-outcome {
+    grid-template-areas:
+      'summary'
+      'missed'
+      'exit';
+    grid-template-rows: auto;
+    grid-template-columns: 1fr;
+    padding: var(--wgu-space-24) 0 0;
+  }
+
+  .wgu-ds .fc-outcome__exit {
+    justify-self: stretch;
+  }
+
+  // On a phone the whole screen scrolls instead of the list.
+  .wgu-ds .fc-outcome {
+    flex: none;
+  }
+
+  .wgu-ds .fc-outcome__list {
+    max-height: none;
+    overflow: visible;
+  }
+}
+
+// A new deck is dealt: the back cards, then the top card, rise into the stack,
+// then the counter appears. Runs after the shell itself has risen in.
+.wgu-ds .fc-stage--deal {
+  .fc-stack__back--far,
+  .fc-stack__back--near,
+  .fc-card:not(.is-falling),
+  .fc-counter {
+    animation: fc-deal var(--wgu-local-motion-medium) var(--wgu-local-ease) both;
+  }
+
+  .fc-stack__back--far {
+    animation-delay: 120ms;
+  }
+
+  .fc-stack__back--near {
+    animation-delay: 200ms;
+  }
+
+  .fc-card:not(.is-falling) {
+    animation-delay: 280ms;
+  }
+
+  .fc-counter {
+    animation-name: fc-fade-in;
+    animation-delay: 420ms;
+  }
+}
+
+// The back cards are centred with translateX(-50%), so they keep it while rising.
+.wgu-ds .fc-stage--deal .fc-stack__back {
+  animation-name: fc-deal-back;
+}
+
+@keyframes fc-deal {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.96);
+  }
+}
+
+@keyframes fc-deal-back {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 40px) scale(0.96);
+  }
+}
+
+@keyframes fc-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+// The outcome comes in piece by piece: the score first, then the missed cards, then Exit.
+.wgu-ds .fc-outcome__summary > *,
+.wgu-ds .fc-outcome__missed > p,
+.wgu-ds .fc-outcome__item,
+.wgu-ds .fc-outcome__exit {
+  animation: fc-deal var(--wgu-local-motion-medium) var(--wgu-local-ease) both;
+}
+
+.wgu-ds .fc-outcome__summary > :nth-child(2) {
+  animation-delay: 80ms;
+}
+
+.wgu-ds .fc-outcome__summary > :nth-child(3) {
+  animation-delay: 160ms;
+}
+
+.wgu-ds .fc-outcome__missed > p {
+  animation-delay: 200ms;
+}
+
+@for $i from 1 through 8 {
+  .wgu-ds .fc-outcome__item:nth-child(#{$i}) {
+    animation-delay: #{200 + $i * 70}ms;
+  }
+}
+
+.wgu-ds .fc-outcome__item:nth-child(n + 9) {
+  animation-delay: 760ms;
+}
+
+.wgu-ds .fc-outcome__exit {
+  animation-name: fc-fade-in;
+  animation-delay: 400ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wgu-ds .fc-card__inner,
+  .wgu-ds .fc-answer__label,
+  .wgu-ds .fc-card__divider,
+  .wgu-ds .fc-card__footer::before,
+  .wgu-ds .fc-card__footer::after {
+    transition-duration: 1ms;
+  }
+
+  .wgu-ds .fc-stage--deal *,
+  .wgu-ds .fc-outcome * {
+    animation: none;
+  }
+
+  .wgu-ds .fc-card.is-falling {
+    animation: fc-fade 200ms linear forwards;
+  }
+
+  @keyframes fc-fade {
+    to {
+      opacity: 0;
     }
+  }
 }
